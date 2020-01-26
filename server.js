@@ -2,10 +2,11 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const colors = require('colors');
+const errorHandler = require('./middleware/error');
 const connectDB = require('./config/db');
 //Route files
 const bootcamps = require('./routes/bootcamps');
-
+const courses = require('./routes/courses');
 //logger file
 //dev logging middleware
 //Load config file
@@ -13,6 +14,9 @@ dotenv.config({ path: './config/config.env' });
 connectDB();
 
 const app = express();
+
+//Body parser
+app.use(express.json());
 
 //dev logging middleware
 if (process.env.NODE_ENV === 'development') {
@@ -22,6 +26,9 @@ if (process.env.NODE_ENV === 'development') {
 
 // Mount routers
 app.use('/api/v1/bootcamps', bootcamps);
+app.use('/api/v1/courses', courses);
+//custom error handler - has to be after router
+app.use(errorHandler);
 
 app.get('/', (req, res) => {
   res.send('<H1>Hi from express</H1>');
