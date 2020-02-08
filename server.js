@@ -2,11 +2,13 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const colors = require('colors');
+const cookieParser = require('cookie-parser');
 const errorHandler = require('./middleware/error');
 const connectDB = require('./config/db');
 //Route files
 const bootcamps = require('./routes/bootcamps');
 const courses = require('./routes/courses');
+const auth = require('./routes/auth');
 //logger file
 //dev logging middleware
 //Load config file
@@ -18,6 +20,9 @@ const app = express();
 //Body parser
 app.use(express.json());
 
+//Cookie parser
+app.use(cookieParser());
+
 //dev logging middleware
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -27,6 +32,7 @@ if (process.env.NODE_ENV === 'development') {
 // Mount routers
 app.use('/api/v1/bootcamps', bootcamps);
 app.use('/api/v1/courses', courses);
+app.use('/api/v1/auth', auth);
 //custom error handler - has to be after router
 app.use(errorHandler);
 

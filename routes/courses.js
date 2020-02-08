@@ -1,22 +1,32 @@
 const express = require('express');
 const {
-  getCourses
-  //,
-  //   getBootcamps,
-  //   updateBootcamp,
-  //   deleteBootcamp,
-  //   addBootcamp,
-  //   getBootcampsInRadius
+  getCourses,
+  getCourse,
+  addCourse,
+  updateCourse,
+  deleteCourse
 } = require('../controllers/courses');
 
+const Course = require('../models/Course');
+const { protect } = require('../middleware/auth');
 const router = express.Router({ mergeParams: true });
+const advancedResults = require('../middleware/advancedResults');
 
-router.route('/').get(getCourses);
+router
+  .route('/')
+  .get(
+    advancedResults(Course, {
+      path: 'bootcamp',
+      select: 'name description'
+    }),
+    getCourses
+  )
+  .post(protect, addCourse);
 
-// router
-//   .route('/:id')
-//   .put(updateBootcamp)
-//   .delete(deleteBootcamp)
-//   .get(getBootcamp);
+router
+  .route('/:id')
+  .get(getCourse)
+  .put(protect, updateCourse)
+  .delete(protect, deleteCourse);
 
 module.exports = router;
